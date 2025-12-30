@@ -1,25 +1,23 @@
 # Agents & Tools — lat-long-mcp-server
 
-This repo is a scaffold for an MCP server that will expose tools around latitude/longitude utilities (e.g., resolving place names, validating coordinates, or proxying other geo services). Fill in the details as you build the server.
+This repo hosts an MCP server that exposes OpenWeather Geocoding tools for latitude/longitude lookups.
 
 ## Overview ✅
-- Planned MCP server exposing geo-centric tools (to be implemented).
-- Recommended to follow the same patterns used in `weather-mcp-server` for tool registration, retries, and diagnostics.
+- MCP server exposing geo-centric tools backed by OpenWeather Geocoding.
+- Patterned after `weather-mcp-server` for FastMCP setup and HTTP transport defaults.
 
 ## Running the MCP server 🛠️
-- Placeholder: add your server entrypoint (e.g., `python -m lat_long_mcp_server` or a `main.py`).
-- Prefer `uv` for running: `uv run --with mcp python -m lat_long_mcp_server` once the module exists.
-- Configure transport via env vars (suggested): `LAT_LONG_TRANSPORT`, `LAT_LONG_HOST`, `LAT_LONG_PORT`, `LAT_LONG_MOUNT_PATH`.
+- Start: `uv run --with mcp python -m lat_long_mcp_server --transport streamable-http --host 127.0.0.1 --port 8000 --mount-path /mcp`
+- StdIO: `uv run --with mcp python -m lat_long_mcp_server --transport stdio`
+- Configure via env vars: `LAT_LONG_TRANSPORT`, `LAT_LONG_HOST`, `LAT_LONG_PORT`, `LAT_LONG_MOUNT_PATH`, and `OPENWEATHERMAP_API_KEY`.
 
 ## Tooling
 - Use `uv` to manage dependencies and stay aligned with lockfiles.
 - Add tests with `pytest` and lint with `ruff` (recommended).
 
-## Suggested tools (to implement) 🧭
-- `validate_coordinates(latitude, longitude)` → basic bounds check.
-- `reverse_geocode(latitude, longitude)` → resolve to nearest place (backed by your chosen API).
-- `forward_geocode(query)` → search for lat/long by place name.
-- Add unit tests with lightweight fakes/mocks for network calls.
+## Current tools 🧭
+- `forward_geocode(query, limit=1, country_code=None)` → OpenWeather direct geocoding.
+- `reverse_geocode(latitude, longitude, limit=1)` → OpenWeather reverse geocoding.
 
 ## File format / diagnostics 📝
 - If you persist lookups, include a small header with timestamp, inputs, and diagnostic fields (attempts, provider, latency).

@@ -1,0 +1,16 @@
+[project]
+name = "lat-long-mcp-server"
+version = "0.1.0"
+description = "MCP server for geocoding via the OpenWeather Geocoding API."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.25.0",
+]
+
+[project.scripts]
+lat-long-mcp-server = "lat_long_mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["lat_long_mcp_server*"]
