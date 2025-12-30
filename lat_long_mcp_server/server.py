@@ -1,6 +1,7 @@
 """Basic MCP server exposing OpenWeather geocoding tools."""
 
 import argparse
+from importlib.metadata import version
 import os
 from typing import Any, Dict, List
 
@@ -11,11 +12,10 @@ from mcp.server.fastmcp import FastMCP
 # Load environment variables from .env file
 load_dotenv()
 
-
 API_BASE = "https://api.openweathermap.org/geo/1.0"
-DEFAULT_HOST = os.environ.get("LAT_LONG_HOST", "127.0.0.1")
-DEFAULT_PORT = int(os.environ.get("LAT_LONG_PORT", "8001"))
-DEFAULT_MOUNT = os.environ.get("LAT_LONG_MOUNT_PATH", "/mcp")
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_PORT = "8001"
+DEFAULT_MOUNT = "/mcp"
 
 mcp = FastMCP(
     "lat-long",
@@ -65,7 +65,9 @@ def _format_locations(records: List[Dict[str, Any]]) -> str:
 
 
 @mcp.tool()
-async def forward_geocode(query: str, limit: int = 1, country_code: str | None = None) -> str:
+async def forward_geocode(
+    query: str, limit: int = 1, country_code: str | None = None
+) -> str:
     """Resolve a place name to latitude/longitude using OpenWeather Geocoding."""
     key = _require_api_key()
     limit = max(1, min(limit, 5))
@@ -91,51 +93,19 @@ async def reverse_geocode(latitude: float, longitude: float, limit: int = 1) -> 
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="lat-long-mcp-server")
-    parser.add_argument("command", nargs="?", choices=["run"], default="run")
-    parser.add_argument("--version", action="store_true", help="Print package version and exit")
     parser.add_argument(
-        "--transport",
-        choices=["stdio", "streamable-http", "sse"],
-        default=os.environ.get("LAT_LONG_TRANSPORT", "streamable-http"),
-        help="Transport to use (default: streamable-http)",
-    )
-    parser.add_argument(
-        "--mount-path",
-        default=os.environ.get("LAT_LONG_MOUNT_PATH", "/mcp"),
-        help="Mount path for HTTP transports (default: /mcp)",
-    )
-    parser.add_argument(
-        "--host",
-        default=os.environ.get("LAT_LONG_HOST", "127.0.0.1"),
-        help="Host to bind the HTTP server to",
-    )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=int(os.environ.get("LAT_LONG_PORT", "8000")),
-        help="Port to bind the HTTP server to",
-    )
-    parser.add_argument(
-        "--api-key",
-        help="OpenWeatherMap API key (overrides OPENWEATHERMAP_API_KEY env var)",
+        "--version", action="store_true", help="Print package version and exit"
     )
     args = parser.parse_args(argv)
 
     if args.version:
         try:
-            from importlib.metadata import version
-
             print(version("lat-long-mcp-server"))
         except Exception:
             print("version unknown")
         return
 
-    if args.api_key:
-        os.environ["OPENWEATHERMAP_API_KEY"] = args.api_key
-
-    if args.command == "run":
-        # Host/port are configured on FastMCP at construction time via env vars.
-        mcp.run(transport=args.transport, mount_path=args.mount_path)
+    mcp.run(transport=args.transport, mount_path=args.mount_path)
 
 
 if __name__ == "__main__":
