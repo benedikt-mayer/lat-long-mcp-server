@@ -1,32 +1,20 @@
 """Basic MCP server exposing OpenWeather geocoding tools."""
 
 import argparse
-import json
 import os
 from typing import Any, Dict, List
 
 import httpx
+from dotenv import load_dotenv
+from mcp.server.fastmcp import FastMCP
 
-try:
-    from mcp.server.fastmcp import FastMCP
-except Exception:  # pragma: no cover - fallback for environments without mcp
-    class FastMCP:  # type: ignore
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            pass
-
-        def tool(self):
-            def _dec(f):
-                return f
-
-            return _dec
-
-        def run(self, *args: Any, **kwargs: Any) -> None:
-            return None
+# Load environment variables from .env file
+load_dotenv()
 
 
 API_BASE = "https://api.openweathermap.org/geo/1.0"
 DEFAULT_HOST = os.environ.get("LAT_LONG_HOST", "127.0.0.1")
-DEFAULT_PORT = int(os.environ.get("LAT_LONG_PORT", "8000"))
+DEFAULT_PORT = int(os.environ.get("LAT_LONG_PORT", "8001"))
 DEFAULT_MOUNT = os.environ.get("LAT_LONG_MOUNT_PATH", "/mcp")
 
 mcp = FastMCP(
