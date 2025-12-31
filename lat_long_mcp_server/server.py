@@ -5,6 +5,7 @@ from importlib.metadata import version
 import os
 from typing import Any, Dict, List
 
+import anyio
 import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
@@ -14,7 +15,7 @@ load_dotenv()
 
 API_BASE = "https://api.openweathermap.org/geo/1.0"
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = "8001"
+DEFAULT_PORT = 8001
 DEFAULT_MOUNT = "/mcp"
 
 mcp = FastMCP(
@@ -105,7 +106,7 @@ def main(argv: list[str] | None = None) -> None:
             print("version unknown")
         return
 
-    mcp.run(transport=args.transport, mount_path=args.mount_path)
+    anyio.run(mcp.run_streamable_http_async)
 
 
 if __name__ == "__main__":
