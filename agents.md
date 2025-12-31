@@ -15,6 +15,8 @@ This repo hosts an MCP server that exposes OpenWeather Geocoding tools for latit
 - Use `uv` to manage dependencies and stay aligned with lockfiles.
 - Add tests with `pytest` and lint with `ruff` (recommended).
 - **After every code change, run:** `ruff check --fix .` and `ruff format .` to ensure code quality and consistency.
+- **Commit and push separately:** run `git commit` first, then `git push` as separate steps (avoid chaining commit+push).
+- Always ask before pushing to any remote.
 
 ## Current tools 🧭
 - `forward_geocode(query, limit=1, country_code=None)` → OpenWeather direct geocoding.
